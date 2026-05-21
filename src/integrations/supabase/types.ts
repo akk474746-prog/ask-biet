@@ -14,13 +14,84 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      biet_crawl_jobs: {
+        Row: {
+          chunks_indexed: number
+          error: string | null
+          finished_at: string | null
+          id: string
+          pages_indexed: number
+          started_at: string
+          status: string
+        }
+        Insert: {
+          chunks_indexed?: number
+          error?: string | null
+          finished_at?: string | null
+          id?: string
+          pages_indexed?: number
+          started_at?: string
+          status?: string
+        }
+        Update: {
+          chunks_indexed?: number
+          error?: string | null
+          finished_at?: string | null
+          id?: string
+          pages_indexed?: number
+          started_at?: string
+          status?: string
+        }
+        Relationships: []
+      }
+      biet_documents: {
+        Row: {
+          chunk_index: number
+          content: string
+          created_at: string
+          embedding: string
+          id: string
+          source_type: string
+          title: string | null
+          url: string
+        }
+        Insert: {
+          chunk_index?: number
+          content: string
+          created_at?: string
+          embedding: string
+          id?: string
+          source_type?: string
+          title?: string | null
+          url: string
+        }
+        Update: {
+          chunk_index?: number
+          content?: string
+          created_at?: string
+          embedding?: string
+          id?: string
+          source_type?: string
+          title?: string | null
+          url?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      match_biet_documents: {
+        Args: { match_count?: number; query_embedding: string }
+        Returns: {
+          content: string
+          id: string
+          similarity: number
+          title: string
+          url: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

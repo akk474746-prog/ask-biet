@@ -6,19 +6,20 @@ import logo from "@/assets/biet-logo.png";
 
 const NAV = [
   { to: "/", label: "Home" },
-  { to: "/chat", label: "Chat" },
-  { to: "/about", label: "About" },
+  { to: "/chat", label: "AI Chat" },
+  { to: "/departments", label: "Departments" },
+  { to: "/about", label: "About BIET" },
   { to: "/contact", label: "Contact" },
 ] as const;
 
 function useTheme() {
-  const [theme, setTheme] = useState<"light" | "dark">("dark");
+  const [theme, setTheme] = useState<"light" | "dark">("light");
   useEffect(() => {
     const stored = (typeof window !== "undefined" && localStorage.getItem("biet-theme")) as
       | "light"
       | "dark"
       | null;
-    const initial = stored ?? "dark";
+    const initial = stored ?? "light";
     setTheme(initial);
     document.documentElement.classList.toggle("dark", initial === "dark");
   }, []);

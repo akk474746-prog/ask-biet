@@ -4,16 +4,16 @@ import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Plus, Trash2, MessageSquare, Sparkles, Send, Square, GraduationCap, Briefcase, BookOpen, Users } from "lucide-react";
+import { Plus, Trash2, MessageSquare, Sparkles, Send, Square, GraduationCap, Briefcase, BookOpen, Users, Mic, MicOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { loadThreads, saveThreads, createThread, deriveTitle, type ChatThread } from "@/lib/chat-storage";
 
 const SUGGESTIONS = [
-  { icon: GraduationCap, text: "What are the admission requirements for CSE?" },
-  { icon: Briefcase, text: "Tell me about recent placements." },
-  { icon: BookOpen, text: "Which departments and courses are offered?" },
-  { icon: Users, text: "What is campus life like at BIET?" },
+  { icon: GraduationCap, text: "What are the admission requirements for CSE at BIET?" },
+  { icon: Briefcase, text: "Tell me about recent placements at BIET." },
+  { icon: BookOpen, text: "Which departments and courses are offered at BIET?" },
+  { icon: Users, text: "How do I contact the BIET admissions office?" },
 ];
 
 export function ChatWorkspace({ threadId, initialQuery }: { threadId: string; initialQuery?: string }) {
@@ -282,7 +282,9 @@ function Composer({
   isLoading: boolean;
 }) {
   const [value, setValue] = useState("");
+  const [listening, setListening] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const recognitionRef = useRef<any>(null);
 
   useEffect(() => {
     textareaRef.current?.focus();
@@ -296,6 +298,37 @@ function Composer({
     if (!trimmed || isLoading) return;
     onSend(trimmed);
     setValue("");
+  };
+
+  const toggleVoice = () => {
+    const SR =
+      (typeof window !== "undefined" &&
+        ((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition)) ||
+      null;
+    if (!SR) {
+      alert("Voice input is not supported in this browser. Try Chrome or Edge.");
+      return;
+    }
+    if (listening) {
+      recognitionRef.current?.stop();
+      setListening(false);
+      return;
+    }
+    const rec = new SR();
+    rec.lang = "en-IN";
+    rec.interimResults = true;
+    rec.continuous = false;
+    rec.onresult = (e: any) => {
+      const transcript = Array.from(e.results)
+        .map((r: any) => r[0].transcript)
+        .join(" ");
+      setValue(transcript);
+    };
+    rec.onend = () => setListening(false);
+    rec.onerror = () => setListening(false);
+    recognitionRef.current = rec;
+    setListening(true);
+    rec.start();
   };
 
   return (
@@ -314,10 +347,20 @@ function Composer({
             }}
             placeholder="Ask anything about BIET — admissions, courses, placements…"
             rows={1}
-            className="w-full resize-none bg-transparent px-4 py-3.5 pr-14 text-sm outline-none placeholder:text-muted-foreground max-h-40"
+            className="w-full resize-none bg-transparent px-4 py-3.5 pr-24 text-sm outline-none placeholder:text-muted-foreground max-h-40"
             style={{ minHeight: "52px" }}
           />
-          <div className="absolute right-2 bottom-2">
+          <div className="absolute right-2 bottom-2 flex items-center gap-1.5">
+            <Button
+              onClick={toggleVoice}
+              size="icon-sm"
+              variant="outline"
+              className={cn("rounded-lg", listening && "border-destructive text-destructive animate-pulse")}
+              aria-label={listening ? "Stop voice input" : "Start voice input"}
+              type="button"
+            >
+              {listening ? <MicOff className="h-3.5 w-3.5" /> : <Mic className="h-3.5 w-3.5" />}
+            </Button>
             {isLoading ? (
               <Button
                 onClick={onStop}

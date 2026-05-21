@@ -1,86 +1,95 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { GraduationCap, Award, MapPin, Calendar } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Award, Building2, Calendar, GraduationCap, Users } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About BIET — Ask BIET" },
-      { name: "description", content: "Bapuji Institute of Engineering & Technology, Davangere — a premier engineering institute committed to academic excellence and holistic student development." },
-      { property: "og:title", content: "About BIET — Ask BIET" },
-      { property: "og:description", content: "Learn about Bapuji Institute of Engineering & Technology, Davangere." },
+      { title: "About BIET Davangere — Ask BIET" },
+      {
+        name: "description",
+        content:
+          "Bapuji Institute of Engineering and Technology (BIET), Davangere — an autonomous engineering institution under VTU, established in 1979 by Bapuji Educational Association.",
+      },
+      { property: "og:title", content: "About BIET Davangere — Ask BIET" },
+      {
+        property: "og:description",
+        content: "Learn about BIET Davangere: history, vision, accreditation and campus.",
+      },
     ],
   }),
-  component: About,
+  component: AboutPage,
 });
 
-const STATS = [
-  { icon: Calendar, value: "1979", label: "Established" },
-  { icon: GraduationCap, value: "10+", label: "Departments" },
-  { icon: Award, value: "NAAC A+", label: "Accredited" },
-  { icon: MapPin, value: "Davangere", label: "Karnataka" },
+const HIGHLIGHTS = [
+  { icon: Calendar, label: "Established", value: "1979" },
+  { icon: Building2, label: "Type", value: "Autonomous · Under VTU" },
+  { icon: Award, label: "Accreditation", value: "NAAC · NBA" },
+  { icon: GraduationCap, label: "Programmes", value: "UG · PG · PhD" },
+  { icon: Users, label: "Trust", value: "Bapuji Educational Association" },
 ];
 
-function About() {
+export default function AboutPage() {
   return (
-    <div className="mx-auto max-w-5xl px-6 py-20">
-      <div className="text-center">
-        <p className="text-xs uppercase tracking-[0.2em] text-brand font-medium">About</p>
-        <h1 className="mt-3 font-display text-4xl sm:text-5xl font-bold">
-          Bapuji Institute of <span className="text-gradient-brand">Engineering & Technology</span>
+    <div className="mx-auto max-w-5xl px-6 py-16">
+      <header className="text-center">
+        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">About the institution</p>
+        <h1 className="mt-3 font-display text-4xl sm:text-5xl font-bold tracking-tight">
+          Bapuji Institute of Engineering & Technology
         </h1>
-        <p className="mt-6 text-lg text-muted-foreground max-w-3xl mx-auto">
-          BIET is a premier engineering institution in Davangere, Karnataka, dedicated to nurturing
-          innovative engineers and leaders since 1979. With a vibrant campus, accomplished faculty,
-          and a strong placement record, BIET continues to shape the next generation of technologists.
+        <p className="mt-4 text-muted-foreground max-w-2xl mx-auto">
+          BIET Davangere is one of Karnataka's premier engineering institutions, founded in 1979 by the
+          Bapuji Educational Association and affiliated to Visvesvaraya Technological University.
         </p>
+      </header>
+
+      {/* Hero image placeholder */}
+      <div className="mt-12 aspect-[16/7] rounded-3xl border bg-secondary/50 grid place-items-center text-muted-foreground shadow-soft overflow-hidden">
+        <div className="text-center">
+          <Building2 className="h-10 w-10 mx-auto opacity-50" />
+          <p className="mt-2 text-sm">Campus image placeholder — drop a hero image here</p>
+        </div>
       </div>
 
-      <div className="mt-14 grid grid-cols-2 sm:grid-cols-4 gap-4">
-        {STATS.map(({ icon: Icon, value, label }) => (
-          <div key={label} className="glass rounded-2xl border p-6 text-center">
-            <Icon className="h-5 w-5 text-brand mx-auto" />
-            <div className="mt-3 font-display text-2xl font-bold">{value}</div>
-            <div className="text-xs text-muted-foreground mt-1">{label}</div>
+      <div className="mt-10 grid grid-cols-2 sm:grid-cols-5 gap-3">
+        {HIGHLIGHTS.map(({ icon: Icon, label, value }) => (
+          <div key={label} className="rounded-2xl border bg-card p-4 shadow-soft">
+            <Icon className="h-4 w-4 text-brand" />
+            <p className="mt-3 text-[11px] uppercase tracking-wider text-muted-foreground">{label}</p>
+            <p className="mt-0.5 font-semibold text-sm">{value}</p>
           </div>
         ))}
       </div>
 
-      <div className="mt-16 grid md:grid-cols-2 gap-6">
-        <div className="glass rounded-2xl border p-8">
-          <h2 className="font-display text-2xl font-semibold">Our Vision</h2>
-          <p className="mt-3 text-muted-foreground leading-relaxed">
-            To be a center of excellence in technical education and research, producing globally
-            competent engineers who contribute to society with ethics, innovation, and leadership.
-          </p>
-        </div>
-        <div className="glass rounded-2xl border p-8">
-          <h2 className="font-display text-2xl font-semibold">Our Mission</h2>
-          <p className="mt-3 text-muted-foreground leading-relaxed">
-            To provide quality engineering education through state-of-the-art infrastructure,
-            industry collaboration, research opportunities, and holistic personality development.
-          </p>
-        </div>
-      </div>
+      <section className="mt-14 prose dark:prose-invert max-w-none">
+        <h2>Vision</h2>
+        <p>
+          To be a centre of academic excellence in engineering and technology, producing globally competent
+          and socially responsible professionals.
+        </p>
 
-      <div className="mt-10 glass rounded-2xl border p-8">
-        <h2 className="font-display text-2xl font-semibold">Programs Offered</h2>
-        <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm">
-          {[
-            "Computer Science & Engineering",
-            "Information Science & Engineering",
-            "AI & Machine Learning",
-            "Electronics & Communication",
-            "Electrical & Electronics",
-            "Mechanical Engineering",
-            "Civil Engineering",
-            "MBA",
-            "MCA",
-          ].map((p) => (
-            <div key={p} className="rounded-lg bg-secondary/60 px-3 py-2 border border-border/40">
-              {p}
-            </div>
-          ))}
-        </div>
+        <h2>Mission</h2>
+        <ul>
+          <li>Deliver quality technical education through innovative teaching–learning practices.</li>
+          <li>Promote research, entrepreneurship and lifelong learning.</li>
+          <li>Inculcate ethical values, leadership and concern for society and environment.</li>
+        </ul>
+
+        <h2>Campus & facilities</h2>
+        <p>
+          Sprawling campus with modern laboratories, central library, hostels, sports facilities, an
+          innovation centre and active student chapters of professional bodies.
+        </p>
+      </section>
+
+      <div className="mt-12 rounded-3xl border bg-card p-8 sm:p-10 text-center shadow-soft">
+        <h2 className="font-display text-2xl font-bold">Have a specific question?</h2>
+        <p className="mt-2 text-muted-foreground">
+          Ask BIET will pull the answer from the official college website.
+        </p>
+        <Link to="/chat" className="inline-block mt-5">
+          <Button size="lg" className="h-11 px-6">Open the assistant</Button>
+        </Link>
       </div>
     </div>
   );
