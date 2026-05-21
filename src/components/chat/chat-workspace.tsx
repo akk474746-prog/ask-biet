@@ -4,16 +4,16 @@ import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Plus, Trash2, MessageSquare, Sparkles, Send, Square, GraduationCap, Briefcase, BookOpen, Users } from "lucide-react";
+import { Plus, Trash2, MessageSquare, Sparkles, Send, Square, GraduationCap, Briefcase, BookOpen, Users, Mic, MicOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { loadThreads, saveThreads, createThread, deriveTitle, type ChatThread } from "@/lib/chat-storage";
 
 const SUGGESTIONS = [
-  { icon: GraduationCap, text: "What are the admission requirements for CSE?" },
-  { icon: Briefcase, text: "Tell me about recent placements." },
-  { icon: BookOpen, text: "Which departments and courses are offered?" },
-  { icon: Users, text: "What is campus life like at BIET?" },
+  { icon: GraduationCap, text: "What are the admission requirements for CSE at BIET?" },
+  { icon: Briefcase, text: "Tell me about recent placements at BIET." },
+  { icon: BookOpen, text: "Which departments and courses are offered at BIET?" },
+  { icon: Users, text: "How do I contact the BIET admissions office?" },
 ];
 
 export function ChatWorkspace({ threadId, initialQuery }: { threadId: string; initialQuery?: string }) {
