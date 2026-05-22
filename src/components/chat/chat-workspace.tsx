@@ -4,7 +4,7 @@ import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Plus, Trash2, MessageSquare, Send, Square, GraduationCap, Briefcase, BookOpen, Users, Mic, MicOff, ArrowUp } from "lucide-react";
+import { Plus, Trash2, MessageSquare, Square, GraduationCap, Briefcase, BookOpen, Users, Mic, MicOff, ArrowUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { loadThreads, saveThreads, createThread, deriveTitle, type ChatThread } from "@/lib/chat-storage";
