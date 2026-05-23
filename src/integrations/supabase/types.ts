@@ -92,6 +92,18 @@ export type Database = {
           url: string
         }[]
       }
+      match_biet_documents_ranked: {
+        Args: { match_count?: number; query_embedding: string }
+        Returns: {
+          content: string
+          id: string
+          similarity: number
+          source_priority: number
+          source_type: string
+          title: string
+          url: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
