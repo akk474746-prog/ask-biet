@@ -185,16 +185,19 @@ export function ChatWorkspace({ threadId, initialQuery }: { threadId: string; in
 
       {/* Chat panel */}
       <section className="flex flex-col overflow-hidden relative">
-        {showEmpty ? (
-          <EmptyState onPick={(text) => sendMessage({ text })} />
-        ) : (
-          <MessageList messages={messages} isLoading={isLoading} />
-        )}
-        <Composer
-          onSend={(text) => sendMessage({ text })}
-          onStop={stop}
-          isLoading={isLoading}
-        />
+        <WatermarkLogo />
+        <div className="relative z-10 flex flex-col flex-1 overflow-hidden">
+          {showEmpty ? (
+            <EmptyState onPick={(text) => sendMessage({ text })} />
+          ) : (
+            <MessageList messages={messages} isLoading={isLoading} />
+          )}
+          <Composer
+            onSend={(text) => sendMessage({ text })}
+            onStop={stop}
+            isLoading={isLoading}
+          />
+        </div>
       </section>
     </div>
   );
