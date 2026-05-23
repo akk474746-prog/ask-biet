@@ -206,17 +206,6 @@ export function ChatWorkspace({ threadId, initialQuery }: { threadId: string; in
 function EmptyState({ onPick }: { onPick: (text: string) => void }) {
   return (
     <div className="flex-1 overflow-y-auto relative">
-      {/* Subtle BIET campus background */}
-      <div
-        className="absolute inset-0 pointer-events-none opacity-[0.05] dark:opacity-[0.08] bg-center bg-cover"
-        style={{ backgroundImage: `url(${campusBg})` }}
-        aria-hidden
-      />
-      <div
-        className="absolute inset-0 pointer-events-none bg-gradient-to-b from-background/60 via-background/80 to-background"
-        aria-hidden
-      />
-
       <div className="relative max-w-2xl mx-auto px-6 pt-16 pb-10 text-center">
         <h1 className="font-display text-3xl sm:text-4xl font-semibold tracking-tight">
           Ask <span className="text-primary">BIET</span>
