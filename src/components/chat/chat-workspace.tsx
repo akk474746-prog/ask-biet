@@ -8,7 +8,23 @@ import { Plus, Trash2, MessageSquare, Square, GraduationCap, Briefcase, BookOpen
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { loadThreads, saveThreads, createThread, deriveTitle, type ChatThread } from "@/lib/chat-storage";
-import campusBg from "@/assets/biet-campus.jpg";
+import bietLogo from "@/assets/biet-logo.png";
+
+function WatermarkLogo() {
+  return (
+    <div
+      className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden z-0"
+      aria-hidden
+    >
+      <img
+        src={bietLogo}
+        alt=""
+        className="w-[min(70vw,560px)] h-auto opacity-[0.08] dark:opacity-[0.12] select-none"
+        style={{ filter: "blur(0.5px)" }}
+      />
+    </div>
+  );
+}
 
 const SUGGESTIONS = [
   { icon: GraduationCap, text: "What are the admission requirements for CSE at BIET?" },
