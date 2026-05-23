@@ -8,6 +8,9 @@ import { embedTexts } from "@/lib/embeddings.server";
 const BUCKET = "biet-docs";
 const MAX_BYTES = 15 * 1024 * 1024; // 15 MB
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const db = supabaseAdmin as any;
+
 function checkAdmin(request: Request): Response | null {
   const adminToken = process.env.ADMIN_TOKEN;
   if (!adminToken) return null;
@@ -26,8 +29,7 @@ async function embedAndStoreChunks(
   const chunks = chunkText(text);
   if (chunks.length === 0) return 0;
 
-  // Clear any previous chunks for this uploaded doc (re-embed scenario).
-  await supabaseAdmin.from("biet_documents").delete().eq("uploaded_doc_id", uploadedDocId);
+  await db.from("biet_documents").delete().eq("uploaded_doc_id", uploadedDocId);
 
   const BATCH = 64;
   let total = 0;
@@ -43,7 +45,7 @@ async function embedAndStoreChunks(
       uploaded_doc_id: uploadedDocId,
       embedding: embeddings[j] as unknown as string,
     }));
-    const { error } = await supabaseAdmin.from("biet_documents").insert(rows);
+    const { error } = await db.from("biet_documents").insert(rows);
     if (error) throw new Error(`Insert failed: ${error.message}`);
     total += rows.length;
   }
@@ -77,19 +79,17 @@ export const Route = createFileRoute("/api/admin/upload-pdf")({
 
           const buffer = new Uint8Array(await file.arrayBuffer());
 
-          // Extract text with unpdf (pure JS, Worker-safe).
           const pdf = await getDocumentProxy(buffer);
           const { text } = await extractText(pdf, { mergePages: true });
           const fullText = Array.isArray(text) ? text.join("\n\n") : text;
 
           if (!fullText || fullText.trim().length < 30) {
             return Response.json(
-              { ok: false, error: "Could not extract readable text from this PDF (it may be a scan)" },
+              { ok: false, error: "Could not extract readable text (PDF may be a scanned image)" },
               { status: 400 },
             );
           }
 
-          // Upload original file to private bucket.
           const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
           const storagePath = `${Date.now()}-${safeName}`;
           const { error: upErr } = await supabaseAdmin.storage
@@ -97,8 +97,7 @@ export const Route = createFileRoute("/api/admin/upload-pdf")({
             .upload(storagePath, buffer, { contentType: "application/pdf", upsert: false });
           if (upErr) throw new Error(`Storage upload failed: ${upErr.message}`);
 
-          // Track the uploaded doc.
-          const { data: doc, error: docErr } = await supabaseAdmin
+          const { data: doc, error: docErr } = await db
             .from("biet_uploaded_documents")
             .insert({
               filename: file.name,
@@ -113,7 +112,7 @@ export const Route = createFileRoute("/api/admin/upload-pdf")({
 
           const chunksIndexed = await embedAndStoreChunks(doc.id, file.name, storagePath, fullText);
 
-          await supabaseAdmin
+          await db
             .from("biet_uploaded_documents")
             .update({ chunks_indexed: chunksIndexed })
             .eq("id", doc.id);
@@ -136,17 +135,16 @@ export const Route = createFileRoute("/api/admin/upload-pdf")({
         const id = url.searchParams.get("id");
         if (!id) return Response.json({ ok: false, error: "Missing id" }, { status: 400 });
 
-        const { data: doc } = await supabaseAdmin
+        const { data: doc } = await db
           .from("biet_uploaded_documents")
           .select("storage_path")
           .eq("id", id)
           .maybeSingle();
 
-        // Chunks cascade-delete via FK. Remove storage object + tracking row.
         if (doc?.storage_path) {
           await supabaseAdmin.storage.from(BUCKET).remove([doc.storage_path]);
         }
-        const { error } = await supabaseAdmin.from("biet_uploaded_documents").delete().eq("id", id);
+        const { error } = await db.from("biet_uploaded_documents").delete().eq("id", id);
         if (error) return Response.json({ ok: false, error: error.message }, { status: 500 });
         return Response.json({ ok: true });
       },
