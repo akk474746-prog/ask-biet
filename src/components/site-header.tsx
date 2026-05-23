@@ -4,6 +4,7 @@ import { Moon, Sun, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { createThread, loadThreads, saveThreads } from "@/lib/chat-storage";
 import { useNavigate } from "@tanstack/react-router";
+import bietLogo from "@/assets/biet-logo.png";
 
 function useTheme() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
@@ -39,10 +40,12 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur border-b border-border/60">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
-        <Link to="/" className="flex items-center gap-2">
-          <div className="h-7 w-7 rounded-md bg-foreground text-background grid place-items-center text-[11px] font-bold tracking-tight">
-            B
-          </div>
+        <Link to="/" className="flex items-center gap-2.5">
+          <img
+            src={bietLogo}
+            alt="BIET Davangere logo"
+            className="h-8 w-8 object-contain"
+          />
           <span className="font-display text-[15px] font-semibold tracking-tight">
             Ask BIET
           </span>

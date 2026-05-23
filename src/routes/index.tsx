@@ -16,15 +16,13 @@ export const Route = createFileRoute("/")({
   }),
   beforeLoad: ({ search }) => {
     if (typeof window === "undefined") return;
-    const threads = loadThreads();
-    let target = threads[0];
-    if (!target) {
-      target = createThread();
-      saveThreads([target]);
-    }
+    // Always open a fresh new chat on app load / refresh.
+    const fresh = createThread();
+    const existing = loadThreads();
+    saveThreads([fresh, ...existing]);
     throw redirect({
       to: "/chat/$threadId",
-      params: { threadId: target.id },
+      params: { threadId: fresh.id },
       search: search.q ? { q: search.q } : {},
     });
   },
