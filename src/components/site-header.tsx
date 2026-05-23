@@ -4,6 +4,7 @@ import { Moon, Sun, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { createThread, loadThreads, saveThreads } from "@/lib/chat-storage";
 import { useNavigate } from "@tanstack/react-router";
+import bietLogo from "@/assets/biet-logo.png";
 
 function useTheme() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
