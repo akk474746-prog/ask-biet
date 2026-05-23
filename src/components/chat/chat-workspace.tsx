@@ -8,7 +8,23 @@ import { Plus, Trash2, MessageSquare, Square, GraduationCap, Briefcase, BookOpen
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { loadThreads, saveThreads, createThread, deriveTitle, type ChatThread } from "@/lib/chat-storage";
-import campusBg from "@/assets/biet-campus.jpg";
+import bietLogo from "@/assets/biet-logo.png";
+
+function WatermarkLogo() {
+  return (
+    <div
+      className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden z-0"
+      aria-hidden
+    >
+      <img
+        src={bietLogo}
+        alt=""
+        className="w-[min(70vw,560px)] h-auto opacity-[0.08] dark:opacity-[0.12] select-none"
+        style={{ filter: "blur(0.5px)" }}
+      />
+    </div>
+  );
+}
 
 const SUGGESTIONS = [
   { icon: GraduationCap, text: "What are the admission requirements for CSE at BIET?" },
@@ -169,16 +185,19 @@ export function ChatWorkspace({ threadId, initialQuery }: { threadId: string; in
 
       {/* Chat panel */}
       <section className="flex flex-col overflow-hidden relative">
-        {showEmpty ? (
-          <EmptyState onPick={(text) => sendMessage({ text })} />
-        ) : (
-          <MessageList messages={messages} isLoading={isLoading} />
-        )}
-        <Composer
-          onSend={(text) => sendMessage({ text })}
-          onStop={stop}
-          isLoading={isLoading}
-        />
+        <WatermarkLogo />
+        <div className="relative z-10 flex flex-col flex-1 overflow-hidden">
+          {showEmpty ? (
+            <EmptyState onPick={(text) => sendMessage({ text })} />
+          ) : (
+            <MessageList messages={messages} isLoading={isLoading} />
+          )}
+          <Composer
+            onSend={(text) => sendMessage({ text })}
+            onStop={stop}
+            isLoading={isLoading}
+          />
+        </div>
       </section>
     </div>
   );
@@ -187,17 +206,6 @@ export function ChatWorkspace({ threadId, initialQuery }: { threadId: string; in
 function EmptyState({ onPick }: { onPick: (text: string) => void }) {
   return (
     <div className="flex-1 overflow-y-auto relative">
-      {/* Subtle BIET campus background */}
-      <div
-        className="absolute inset-0 pointer-events-none opacity-[0.05] dark:opacity-[0.08] bg-center bg-cover"
-        style={{ backgroundImage: `url(${campusBg})` }}
-        aria-hidden
-      />
-      <div
-        className="absolute inset-0 pointer-events-none bg-gradient-to-b from-background/60 via-background/80 to-background"
-        aria-hidden
-      />
-
       <div className="relative max-w-2xl mx-auto px-6 pt-16 pb-10 text-center">
         <h1 className="font-display text-3xl sm:text-4xl font-semibold tracking-tight">
           Ask <span className="text-primary">BIET</span>
