@@ -15,6 +15,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ChatIndexRouteImport } from './routes/chat.index'
 import { Route as ChatThreadIdRouteImport } from './routes/chat.$threadId'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as ApiAdminUploadPdfRouteImport } from './routes/api/admin/upload-pdf'
 import { Route as ApiAdminStatusRouteImport } from './routes/api/admin/status'
 import { Route as ApiAdminCrawlRouteImport } from './routes/api/admin/crawl'
 
@@ -48,6 +49,11 @@ const ApiChatRoute = ApiChatRouteImport.update({
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminUploadPdfRoute = ApiAdminUploadPdfRouteImport.update({
+  id: '/api/admin/upload-pdf',
+  path: '/api/admin/upload-pdf',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAdminStatusRoute = ApiAdminStatusRouteImport.update({
   id: '/api/admin/status',
   path: '/api/admin/status',
@@ -68,6 +74,7 @@ export interface FileRoutesByFullPath {
   '/chat/': typeof ChatIndexRoute
   '/api/admin/crawl': typeof ApiAdminCrawlRoute
   '/api/admin/status': typeof ApiAdminStatusRoute
+  '/api/admin/upload-pdf': typeof ApiAdminUploadPdfRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -78,6 +85,7 @@ export interface FileRoutesByTo {
   '/chat': typeof ChatIndexRoute
   '/api/admin/crawl': typeof ApiAdminCrawlRoute
   '/api/admin/status': typeof ApiAdminStatusRoute
+  '/api/admin/upload-pdf': typeof ApiAdminUploadPdfRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -89,6 +97,7 @@ export interface FileRoutesById {
   '/chat/': typeof ChatIndexRoute
   '/api/admin/crawl': typeof ApiAdminCrawlRoute
   '/api/admin/status': typeof ApiAdminStatusRoute
+  '/api/admin/upload-pdf': typeof ApiAdminUploadPdfRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -101,6 +110,7 @@ export interface FileRouteTypes {
     | '/chat/'
     | '/api/admin/crawl'
     | '/api/admin/status'
+    | '/api/admin/upload-pdf'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -111,6 +121,7 @@ export interface FileRouteTypes {
     | '/chat'
     | '/api/admin/crawl'
     | '/api/admin/status'
+    | '/api/admin/upload-pdf'
   id:
     | '__root__'
     | '/'
@@ -121,6 +132,7 @@ export interface FileRouteTypes {
     | '/chat/'
     | '/api/admin/crawl'
     | '/api/admin/status'
+    | '/api/admin/upload-pdf'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -132,6 +144,7 @@ export interface RootRouteChildren {
   ChatIndexRoute: typeof ChatIndexRoute
   ApiAdminCrawlRoute: typeof ApiAdminCrawlRoute
   ApiAdminStatusRoute: typeof ApiAdminStatusRoute
+  ApiAdminUploadPdfRoute: typeof ApiAdminUploadPdfRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -178,6 +191,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/upload-pdf': {
+      id: '/api/admin/upload-pdf'
+      path: '/api/admin/upload-pdf'
+      fullPath: '/api/admin/upload-pdf'
+      preLoaderRoute: typeof ApiAdminUploadPdfRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/status': {
       id: '/api/admin/status'
       path: '/api/admin/status'
@@ -204,6 +224,7 @@ const rootRouteChildren: RootRouteChildren = {
   ChatIndexRoute: ChatIndexRoute,
   ApiAdminCrawlRoute: ApiAdminCrawlRoute,
   ApiAdminStatusRoute: ApiAdminStatusRoute,
+  ApiAdminUploadPdfRoute: ApiAdminUploadPdfRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

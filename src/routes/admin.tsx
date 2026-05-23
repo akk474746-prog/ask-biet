@@ -1,6 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { Loader2, RefreshCw, Database, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import {
+  Loader2,
+  RefreshCw,
+  Database,
+  AlertTriangle,
+  CheckCircle2,
+  Upload,
+  FileText,
+  Trash2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/admin")({
@@ -20,15 +29,47 @@ type Job = {
   finished_at: string | null;
 };
 
-type Status = { totalChunks: number; jobs: Job[] };
+type UploadedDoc = {
+  id: string;
+  filename: string;
+  department: string | null;
+  size_bytes: number;
+  chunks_indexed: number;
+  uploaded_at: string;
+};
+
+type Status = { totalChunks: number; jobs: Job[]; uploadedDocs: UploadedDoc[] };
+
+const DEPARTMENTS = [
+  "General",
+  "CSE",
+  "ISE",
+  "AI & ML",
+  "ECE",
+  "EEE",
+  "Mechanical",
+  "Civil",
+  "Biotechnology",
+  "MBA",
+  "MCA",
+];
+
+function formatBytes(n: number) {
+  if (n < 1024) return `${n} B`;
+  if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
+  return `${(n / 1024 / 1024).toFixed(1)} MB`;
+}
 
 function AdminPage() {
   const [status, setStatus] = useState<Status | null>(null);
   const [loading, setLoading] = useState(false);
   const [crawling, setCrawling] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [department, setDepartment] = useState("General");
   const [token, setToken] = useState("");
   const [limit, setLimit] = useState(400);
   const [message, setMessage] = useState<{ type: "ok" | "err"; text: string } | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const load = async () => {
     setLoading(true);
@@ -75,12 +116,66 @@ function AdminPage() {
     }
   };
 
+  const handleUpload = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    setUploading(true);
+    setMessage(null);
+    let uploadedCount = 0;
+    let totalChunks = 0;
+    try {
+      for (const file of Array.from(files)) {
+        const form = new FormData();
+        form.append("file", file);
+        form.append("department", department);
+        const res = await fetch("/api/admin/upload-pdf", {
+          method: "POST",
+          headers: token ? { "x-admin-token": token } : {},
+          body: form,
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || !data.ok) {
+          throw new Error(data.error ?? `Upload of ${file.name} failed (${res.status})`);
+        }
+        uploadedCount += 1;
+        totalChunks += data.chunksIndexed ?? 0;
+      }
+      setMessage({
+        type: "ok",
+        text: `Uploaded ${uploadedCount} document${uploadedCount === 1 ? "" : "s"} → ${totalChunks} chunks indexed.`,
+      });
+      await load();
+    } catch (err) {
+      setMessage({ type: "err", text: err instanceof Error ? err.message : "Upload error" });
+    } finally {
+      setUploading(false);
+      if (fileRef.current) fileRef.current.value = "";
+    }
+  };
+
+  const deleteDoc = async (id: string, filename: string) => {
+    if (!confirm(`Delete "${filename}" and its embeddings?`)) return;
+    try {
+      const res = await fetch(`/api/admin/upload-pdf?id=${encodeURIComponent(id)}`, {
+        method: "DELETE",
+        headers: token ? { "x-admin-token": token } : {},
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.ok) {
+        setMessage({ type: "err", text: data.error ?? `Delete failed (${res.status})` });
+      } else {
+        await load();
+      }
+    } catch (err) {
+      setMessage({ type: "err", text: err instanceof Error ? err.message : "Delete error" });
+    }
+  };
+
   return (
     <div className="mx-auto max-w-4xl px-6 py-12">
       <header className="flex items-center justify-between">
         <div>
           <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Knowledge base</p>
-          <h1 className="font-display text-3xl font-bold mt-1">Admin · Re-index</h1>
+          <h1 className="font-display text-3xl font-bold mt-1">Admin · Knowledge base</h1>
         </div>
         <Button variant="outline" size="sm" onClick={load} disabled={loading}>
           <RefreshCw className={loading ? "h-3.5 w-3.5 animate-spin" : "h-3.5 w-3.5"} />
@@ -99,15 +194,20 @@ function AdminPage() {
       </div>
 
       <div className="mt-6 rounded-2xl border bg-card p-6 shadow-soft">
-        <h2 className="font-display text-lg font-semibold">Crawl bietdvg.edu</h2>
+        <div className="flex items-center gap-2">
+          <h2 className="font-display text-lg font-semibold">Department documents</h2>
+          <span className="rounded-full bg-brand/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand">
+            Highest priority
+          </span>
+        </div>
         <p className="text-sm text-muted-foreground mt-1">
-          Triggers Firecrawl, chunks every page, embeds the chunks and rebuilds the knowledge base.
-          Old chunks are replaced.
+          Upload department PDFs (faculty lists, brochures, reports). The chatbot prefers these over
+          scraped website data.
         </p>
 
-        <div className="mt-5 grid sm:grid-cols-[1fr_140px] gap-3">
+        <div className="mt-5 grid sm:grid-cols-[1fr_180px] gap-3">
           <div>
-            <label className="text-xs font-medium text-muted-foreground">Admin token (if configured)</label>
+            <label className="text-xs font-medium text-muted-foreground">Admin token (if set)</label>
             <input
               type="password"
               value={token}
@@ -117,43 +217,113 @@ function AdminPage() {
             />
           </div>
           <div>
-            <label className="text-xs font-medium text-muted-foreground">Page limit</label>
-            <input
-              type="number"
-              min={10}
-              max={1000}
-              value={limit}
-              onChange={(e) => setLimit(Number(e.target.value) || 400)}
+            <label className="text-xs font-medium text-muted-foreground">Tag department</label>
+            <select
+              value={department}
+              onChange={(e) => setDepartment(e.target.value)}
               className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-brand"
-            />
+            >
+              {DEPARTMENTS.map((d) => (
+                <option key={d} value={d}>
+                  {d}
+                </option>
+              ))}
+            </select>
           </div>
+        </div>
+
+        <div className="mt-4">
+          <input
+            ref={fileRef}
+            type="file"
+            accept="application/pdf"
+            multiple
+            onChange={(e) => handleUpload(e.target.files)}
+            className="hidden"
+          />
+          <Button
+            onClick={() => fileRef.current?.click()}
+            disabled={uploading}
+            className="h-11 px-6"
+          >
+            {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+            {uploading ? "Uploading & embedding…" : "Upload PDF(s)"}
+          </Button>
+        </div>
+
+        <div className="mt-5 divide-y divide-border border-t border-border">
+          {(status?.uploadedDocs ?? []).length === 0 && (
+            <p className="text-sm text-muted-foreground py-4">No documents uploaded yet.</p>
+          )}
+          {status?.uploadedDocs?.map((d) => (
+            <div key={d.id} className="py-3 flex items-center justify-between gap-3 text-sm">
+              <div className="flex items-start gap-3 min-w-0">
+                <FileText className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+                <div className="min-w-0">
+                  <p className="font-medium truncate">{d.filename}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {d.department ?? "Untagged"} · {formatBytes(d.size_bytes)} ·{" "}
+                    {d.chunks_indexed} chunks ·{" "}
+                    {new Date(d.uploaded_at).toLocaleDateString()}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => deleteDoc(d.id, d.filename)}
+                className="rounded-lg p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                title="Delete document"
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-6 rounded-2xl border bg-card p-6 shadow-soft">
+        <h2 className="font-display text-lg font-semibold">Crawl bietdvg.edu</h2>
+        <p className="text-sm text-muted-foreground mt-1">
+          Scrapes the BIET website and rebuilds its chunks. Used as a fallback when documents above
+          don't have the answer.
+        </p>
+
+        <div className="mt-5">
+          <label className="text-xs font-medium text-muted-foreground">Page limit</label>
+          <input
+            type="number"
+            min={10}
+            max={1000}
+            value={limit}
+            onChange={(e) => setLimit(Number(e.target.value) || 400)}
+            className="mt-1 w-40 rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-brand"
+          />
         </div>
 
         <Button onClick={triggerCrawl} disabled={crawling} className="mt-5 h-11 px-6">
           {crawling ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
           {crawling ? "Crawling & embedding… (a few minutes)" : "Start full re-index"}
         </Button>
-
-        {message && (
-          <div
-            className={`mt-4 flex items-start gap-2 rounded-lg border p-3 text-sm ${
-              message.type === "ok"
-                ? "border-emerald-500/30 bg-emerald-500/5 text-emerald-700 dark:text-emerald-300"
-                : "border-destructive/30 bg-destructive/5 text-destructive"
-            }`}
-          >
-            {message.type === "ok" ? (
-              <CheckCircle2 className="h-4 w-4 mt-0.5 shrink-0" />
-            ) : (
-              <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
-            )}
-            <span>{message.text}</span>
-          </div>
-        )}
       </div>
 
+      {message && (
+        <div
+          className={`mt-4 flex items-start gap-2 rounded-lg border p-3 text-sm ${
+            message.type === "ok"
+              ? "border-emerald-500/30 bg-emerald-500/5 text-emerald-700 dark:text-emerald-300"
+              : "border-destructive/30 bg-destructive/5 text-destructive"
+          }`}
+        >
+          {message.type === "ok" ? (
+            <CheckCircle2 className="h-4 w-4 mt-0.5 shrink-0" />
+          ) : (
+            <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
+          )}
+          <span>{message.text}</span>
+        </div>
+      )}
+
       <div className="mt-6 rounded-2xl border bg-card p-6 shadow-soft">
-        <h2 className="font-display text-lg font-semibold">Recent jobs</h2>
+        <h2 className="font-display text-lg font-semibold">Recent crawl jobs</h2>
         <div className="mt-3 divide-y divide-border">
           {(status?.jobs ?? []).length === 0 && (
             <p className="text-sm text-muted-foreground py-4">No crawl jobs yet.</p>
@@ -186,8 +356,8 @@ function AdminPage() {
       </div>
 
       <p className="mt-6 text-xs text-muted-foreground">
-        Tip: Set an <code className="rounded bg-secondary px-1">ADMIN_TOKEN</code> secret to lock this
-        endpoint. Connect Firecrawl in Connectors before running a crawl.
+        Tip: Set an <code className="rounded bg-secondary px-1">ADMIN_TOKEN</code> secret to lock
+        upload/crawl endpoints in production.
       </p>
     </div>
   );
