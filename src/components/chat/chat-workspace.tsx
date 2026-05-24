@@ -27,10 +27,10 @@ function WatermarkLogo() {
 }
 
 const SUGGESTIONS = [
-  { icon: GraduationCap, text: "What are the admission requirements for CSE at BIET?" },
-  { icon: Briefcase, text: "Tell me about recent placements at BIET." },
-  { icon: BookOpen, text: "Which departments and courses are offered at BIET?" },
-  { icon: Users, text: "How do I contact the BIET admissions office?" },
+  { icon: Users, text: "Who is the principal of BIET?" },
+  { icon: Briefcase, text: "BIET placement information" },
+  { icon: BookOpen, text: "Courses offered at BIET" },
+  { icon: GraduationCap, text: "Admission process" },
 ];
 
 export function ChatWorkspace({ threadId, initialQuery }: { threadId: string; initialQuery?: string }) {
@@ -207,11 +207,12 @@ function EmptyState({ onPick }: { onPick: (text: string) => void }) {
   return (
     <div className="flex-1 overflow-y-auto relative">
       <div className="relative max-w-2xl mx-auto px-6 pt-16 pb-10 text-center">
+        <img src={bietLogo} alt="BIET Davangere" className="mx-auto h-16 w-16 object-contain mb-4" />
         <h1 className="font-display text-3xl sm:text-4xl font-semibold tracking-tight">
           Ask <span className="text-primary">BIET</span>
         </h1>
         <p className="mt-3 text-[15px] text-muted-foreground">
-          Your AI assistant for Bapuji Institute of Engineering & Technology, Davangere.
+          Hi! I'm Ask BIET — your AI assistant for BIET Davangere. Ask me anything about departments, admissions, placements, faculty, courses, or campus information.
         </p>
 
         <div className="mt-10 grid sm:grid-cols-2 gap-2.5">
