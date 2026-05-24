@@ -27,10 +27,10 @@ function WatermarkLogo() {
 }
 
 const SUGGESTIONS = [
-  { icon: GraduationCap, text: "What are the admission requirements for CSE at BIET?" },
-  { icon: Briefcase, text: "Tell me about recent placements at BIET." },
-  { icon: BookOpen, text: "Which departments and courses are offered at BIET?" },
-  { icon: Users, text: "How do I contact the BIET admissions office?" },
+  { icon: Users, text: "Who is the principal of BIET?" },
+  { icon: Briefcase, text: "BIET placement information" },
+  { icon: BookOpen, text: "Courses offered at BIET" },
+  { icon: GraduationCap, text: "Admission process" },
 ];
 
 export function ChatWorkspace({ threadId, initialQuery }: { threadId: string; initialQuery?: string }) {
