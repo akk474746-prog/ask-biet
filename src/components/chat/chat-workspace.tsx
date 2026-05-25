@@ -206,23 +206,23 @@ export function ChatWorkspace({ threadId, initialQuery }: { threadId: string; in
 function EmptyState({ onPick }: { onPick: (text: string) => void }) {
   return (
     <div className="flex-1 overflow-y-auto relative">
-      <div className="relative max-w-2xl mx-auto px-6 pt-16 pb-10 text-center">
-        <img src={bietLogo} alt="BIET Davangere" className="mx-auto h-16 w-16 object-contain mb-4" />
-        <h1 className="font-display text-3xl sm:text-4xl font-semibold tracking-tight">
+      <div className="relative max-w-2xl mx-auto px-6 pt-6 sm:pt-10 pb-6 text-center">
+        <img src={bietLogo} alt="BIET Davangere" className="mx-auto h-12 w-12 sm:h-14 sm:w-14 object-contain mb-3" />
+        <h1 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight">
           Ask <span className="text-primary">BIET</span>
         </h1>
-        <p className="mt-3 text-[15px] text-muted-foreground">
+        <p className="mt-2 text-sm sm:text-[15px] text-muted-foreground leading-relaxed">
           Hi! I'm Ask BIET — your AI assistant for BIET Davangere. Ask me anything about departments, admissions, placements, faculty, courses, or campus information.
         </p>
 
-        <div className="mt-10 grid sm:grid-cols-2 gap-2.5">
+        <div className="mt-6 sm:mt-8 grid sm:grid-cols-2 gap-2">
           {SUGGESTIONS.map(({ icon: Icon, text }) => (
             <button
               key={text}
               onClick={() => onPick(text)}
-              className="group text-left rounded-xl border border-border bg-card/80 backdrop-blur-sm p-3.5 hover:border-foreground/30 hover:bg-card transition"
+              className="group text-left rounded-xl border border-border bg-card/80 backdrop-blur-sm p-3 hover:border-foreground/30 hover:bg-card transition"
             >
-              <div className="flex items-start gap-3">
+              <div className="flex items-start gap-2.5">
                 <Icon className="h-4 w-4 mt-0.5 text-muted-foreground group-hover:text-foreground transition" />
                 <span className="text-sm text-foreground/80 group-hover:text-foreground">{text}</span>
               </div>
