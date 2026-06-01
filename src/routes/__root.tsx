@@ -80,8 +80,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Ask BIET — AI College Assistant" },
       { name: "twitter:description", content: "Ask BIET is the AI assistant for Bapuji Institute of Engineering & Technology. Instant answers on admissions, courses, placements, fees and more." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/30dec344-8819-40c4-ab1c-739c844cf94e/id-preview-3f48322e--db6a6fd5-ed07-4679-8cf3-3e13b9007e03.lovable.app-1779428137767.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/30dec344-8819-40c4-ab1c-739c844cf94e/id-preview-3f48322e--db6a6fd5-ed07-4679-8cf3-3e13b9007e03.lovable.app-1779428137767.png" },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/2v85wIqLKGeUeTw0Ls537dbvntq1/social-images/social-1780314297891-Screenshot_2026-06-01_171426.webp" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/2v85wIqLKGeUeTw0Ls537dbvntq1/social-images/social-1780314297891-Screenshot_2026-06-01_171426.webp" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
